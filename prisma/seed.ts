@@ -1,5 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
+
 
 const prisma = new PrismaClient();
 
@@ -30,26 +33,14 @@ function buildReaderContent(title: string, author: string, description: string) 
 }
 
 const COVERS = [
-    'https://unsplash.com',
-    'https://unsplash.com',
-    'https://unsplash.com',
-    'https://unsplash.com',
-    'https://unsplash.com',
-    'https://unsplash.com',
-    'https://unsplash.com',
-    'https://unsplash.com',
-    'https://unsplash.com',
-    'https://unsplash.com',
-    'https://unsplash.com',
-    'https://unsplash.com',
+  '/covers/cover-1.svg',
+  '/covers/cover-2.svg',
+  '/covers/cover-3.svg',
+  '/covers/cover-4.svg',
+  '/covers/cover-5.svg',
+  '/covers/cover-6.svg',
 ];
 
-const AUDIO_SAMPLES = [
-    'https://soundhelix.com',
-    'https://soundhelix.com',
-    'https://soundhelix.com',
-    'https://soundhelix.com',
-];
 
 const CATALOG: Array<[string, string, string, number, string]> = [
     // Фантастика (10)
@@ -127,6 +118,56 @@ const CATALOG: Array<[string, string, string, number, string]> = [
 
 async function main() {
     console.log('Очистка старых данных...');
+    // Создаём локальные обложки и аудиофайл в папке public (чтобы работало без интернета)
+    const coversDir = path.join(process.cwd(), 'public', 'covers');
+    fs.mkdirSync(coversDir, { recursive: true });
+
+    const themes = [
+    ['#1e293b', '#f59e0b', 'ФАНТАСТИКА'],
+    ['#311042', '#c084fc', 'ФЭНТЕЗИ'],
+    ['#0f172a', '#38bdf8', 'ДЕТЕКТИВ'],
+    ['#064e3b', '#34d399', 'ПСИХОЛОГИЯ'],
+    ['#451a03', '#fbbf24', 'БИЗНЕС'],
+    ['#4c0519', '#fb7185', 'КЛАССИКА'],
+    ];
+
+    themes.forEach(([c1, c2, label], idx) => {
+        const ns = 'http://' + 'www.w3.org/2000/svg';
+        const svg = `<svg xmlns="${ns}" width="400" height="600" viewBox="0 0 400 600">,
+        <rect width="400" height="600" fill="${c1}"/>
+        <rect x="24" y="24" width="352" height="552" rx="16" fill="none" stroke="${c2}" stroke-width="3"/>
+        <text x="200" y="270" font-family="Arial, sans-serif" font-size="42" font-weight="bold" fill="${c2}" text-anchor="middle">KNIGI</text>
+        <text x="200" y="480" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">${label}</text>
+    </svg>`;
+    fs.writeFileSync(path.join(coversDir, `cover-${idx + 1}.svg`), svg);
+    });
+
+    const sr = 44100;
+    const seconds = 8;
+    const n = sr * seconds;
+    const buf = Buffer.alloc(44 + n * 2);
+    buf.write('RIFF', 0);
+    buf.writeUInt32LE(36 + n * 2, 4);
+    buf.write('WAVEfmt ', 8);
+    buf.writeUInt32LE(16, 16);
+    buf.writeUInt16LE(1, 20);
+    buf.writeUInt16LE(1, 22);
+    buf.writeUInt32LE(sr, 24);
+    buf.writeUInt32LE(sr * 2, 28);
+    buf.writeUInt16LE(2, 32);
+    buf.writeUInt16LE(16, 34);
+    buf.write('data', 36);
+    buf.writeUInt32LE(n * 2, 40);
+
+    const notes = [261.63, 329.63, 392.0, 523.25, 493.88, 392.0, 329.63, 261.63];
+    for (let i = 0; i < n; i++) {
+        const noteIdx = Math.min(notes.length - 1, Math.floor(i / sr));
+        const freq = notes.at(noteIdx) || 329.63;
+        const t = i / sr;
+        const sample = Math.sin(2 * Math.PI * freq * t) * 0.6;
+        buf.writeInt16LE(Math.round(sample * 32767), 44 + i * 2);
+    }
+
     await prisma.libraryItem.deleteMany();
     await prisma.review.deleteMany();
     await prisma.book.deleteMany();
@@ -134,16 +175,16 @@ async function main() {
 
     const demoUser = await prisma.user.create({
         data: {
-            email: 'reader@example.com',
-            name: 'Алексей Читатель',
+            email: 'anna@gmail.com',
+            name: 'Анна Читатель',
             passwordHash: hashPassword('123456'),
         },
     });
 
     const secondUser = await prisma.user.create({
         data: {
-            email: 'anna@example.com',
-            name: 'Анна Книголюб',
+            email: 'alena@gmail.com',
+            name: 'Алёна Книголюб',
             passwordHash: hashPassword('123456'),
         },
     });
@@ -159,7 +200,6 @@ async function main() {
         const description = item.at(4) as string;
 
         const coverUrl = COVERS.at(i % COVERS.length)!;
-        const audioUrl = i % 3 === 0 ? AUDIO_SAMPLES.at(i % AUDIO_SAMPLES.length)! : null;
 
         const created = await prisma.book.create({
             data: {
@@ -168,7 +208,6 @@ async function main() {
                 genre,
                 publishedYear,
                 coverUrl,
-                audioUrl,
                 description,
                 content: buildReaderContent(title, author, description),
             },

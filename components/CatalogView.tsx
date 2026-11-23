@@ -22,7 +22,6 @@ interface CatalogViewProps {
 
 const GENRES = [
   'Все',
-  'Аудиокниги',
   'Фантастика',
   'Фэнтези',
   'Детективы',
@@ -38,11 +37,7 @@ export default function CatalogView({ books, currentUser }: CatalogViewProps) {
   const filteredBooks = useMemo(() => {
     return books.filter((book) => {
       const matchesGenre =
-        selectedGenre === 'Все'
-          ? true
-          : selectedGenre === 'Аудиокниги'
-          ? Boolean(book.audioUrl)
-          : book.genre === selectedGenre;
+        selectedGenre === 'Все' ? true : book.genre === selectedGenre;
 
       const q = searchQuery.trim().toLowerCase();
       const matchesSearch =
@@ -56,7 +51,7 @@ export default function CatalogView({ books, currentUser }: CatalogViewProps) {
 
   return (
     <div className="min-h-screen bg-[#f6f6f9] text-slate-900">
-      {/* Верхняя шапка в стиле MyBook */}
+      {/* Верхняя шапка */}
       <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
           <Link href="/" className="flex items-center gap-2.5">
@@ -75,7 +70,7 @@ export default function CatalogView({ books, currentUser }: CatalogViewProps) {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Книга, автор или серия..."
+                placeholder="Книга или автор..."
                 className="w-full rounded-full border border-slate-200 bg-slate-100 px-4 py-2 pl-10 text-sm text-slate-900 outline-none transition focus:border-amber-400 focus:bg-white focus:ring-2 focus:ring-amber-200"
               />
               <span className="pointer-events-none absolute left-3.5 top-2.5 text-slate-400">
@@ -94,12 +89,6 @@ export default function CatalogView({ books, currentUser }: CatalogViewProps) {
 
           {/* Навигация справа */}
           <nav className="order-2 flex items-center gap-3 md:order-3">
-            <Link
-              href="/books/new"
-              className="rounded-full border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition hover:border-amber-400 hover:text-slate-900 sm:text-sm"
-            >
-              + Добавить книгу
-            </Link>
             <Link
               href="/library"
               className="rounded-full px-3.5 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 sm:text-sm"
@@ -139,7 +128,7 @@ export default function CatalogView({ books, currentUser }: CatalogViewProps) {
                       : 'bg-slate-100 text-slate-700 hover:bg-amber-100 hover:text-slate-900'
                   }`}
                 >
-                  {genre === 'Аудиокниги' ? '🎧 Аудиокниги' : genre}
+                  {genre}
                 </button>
               );
             })}
@@ -149,17 +138,17 @@ export default function CatalogView({ books, currentUser }: CatalogViewProps) {
 
       {/* Основной контент */}
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-        {/* Промо-баннер в духе MyBook */}
+        {/* Промо-баннер */}
         <section className="mb-8 rounded-3xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-200 p-6 shadow-sm sm:p-8">
           <div className="max-w-2xl">
             <span className="inline-block rounded-full bg-slate-900/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-slate-900">
-              Каталог из базы SQLite ({books.length} книг)
+              Каталог книг ({books.length})
             </span>
             <h1 className="mt-3 text-2xl font-black tracking-tight text-slate-900 sm:text-4xl">
-              Читайте и слушайте лучшие книги в одном месте
+              Находите лучшие книги, читайте отзывы и собирайте личную полку
             </h1>
             <p className="mt-2 text-sm text-slate-800 sm:text-base">
-              Выбирайте жанр на плашке сверху, ищите любимых авторов, ставьте оценки и собирайте свою личную полку.
+              Выбирайте жанр на плашке сверху, ищите любимых авторов, ставьте оценки и сохраняйте книги в свою библиотеку.
             </p>
           </div>
         </section>
@@ -207,11 +196,6 @@ export default function CatalogView({ books, currentUser }: CatalogViewProps) {
                     alt={book.title}
                     className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                   />
-                  {book.audioUrl && (
-                    <span className="absolute right-2.5 top-2.5 rounded-full bg-slate-900/85 px-2.5 py-1 text-xs font-semibold text-amber-300 backdrop-blur">
-                      🎧 Аудио
-                    </span>
-                  )}
                   <span className="absolute bottom-2.5 left-2.5 rounded-lg bg-white/90 px-2 py-0.5 text-xs font-semibold text-slate-800 backdrop-blur">
                     {book.genre}
                   </span>
