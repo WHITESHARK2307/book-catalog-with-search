@@ -122,11 +122,10 @@ export default function CatalogView({ books, currentUser }: CatalogViewProps) {
                 <button
                   key={genre}
                   onClick={() => setSelectedGenre(genre)}
-                  className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition ${
-                    isActive
+                  className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition ${isActive
                       ? 'bg-slate-900 text-white shadow-sm'
                       : 'bg-slate-100 text-slate-700 hover:bg-amber-100 hover:text-slate-900'
-                  }`}
+                    }`}
                 >
                   {genre}
                 </button>
@@ -139,7 +138,7 @@ export default function CatalogView({ books, currentUser }: CatalogViewProps) {
       {/* Основной контент */}
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
         {/* Промо-баннер */}
-        <section className="mb-8 rounded-3xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-200 p-6 shadow-sm sm:p-8">
+        <section className="mb-8 rounded-3xl bg-linear-to-r from-amber-400 via-amber-300 to-yellow-200 p-6 shadow-sm sm:p-8">
           <div className="max-w-2xl">
             <span className="inline-block rounded-full bg-slate-900/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-slate-900">
               Каталог книг ({books.length})
@@ -148,7 +147,7 @@ export default function CatalogView({ books, currentUser }: CatalogViewProps) {
               Находите лучшие книги, читайте отзывы и собирайте личную полку
             </h1>
             <p className="mt-2 text-sm text-slate-800 sm:text-base">
-              Выбирайте жанр на плашке сверху, ищите любимых авторов, ставьте оценки и сохраняйте книги в свою библиотеку.
+              Выбирайте жанр, ищите любимых авторов, ставьте оценки и сохраняйте книги в свою библиотеку.
             </p>
           </div>
         </section>
@@ -190,7 +189,7 @@ export default function CatalogView({ books, currentUser }: CatalogViewProps) {
                 href={`/books/${book.id}`}
                 className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
               >
-                <div className="relative aspect-[2/3] w-full overflow-hidden bg-slate-100">
+                <div className="relative aspect-2/3 w-full overflow-hidden bg-slate-100">
                   <img
                     src={book.coverUrl}
                     alt={book.title}
@@ -220,8 +219,8 @@ export default function CatalogView({ books, currentUser }: CatalogViewProps) {
                       {book.reviewsCount === 1
                         ? 'отзыв'
                         : book.reviewsCount >= 2 && book.reviewsCount <= 4
-                        ? 'отзыва'
-                        : 'отзывов'}
+                          ? 'отзыва'
+                          : 'отзывов'}
                     </span>
                   </div>
                 </div>
