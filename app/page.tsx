@@ -4,6 +4,11 @@ import CatalogView, { BookCardData } from '@/components/CatalogView';
 
 export const dynamic = 'force-dynamic';
 
+export const metadata = {
+  title: 'Knigi — Каталог книг с живым поиском и отзывами',
+  description: 'Ищите книги по автору и названию, выбирайте жанры, читайте рецензии и собирайте личную библиотеку.',
+};
+
 export default async function HomePage() {
   const [booksFromDb, currentUser] = await Promise.all([
     prisma.book.findMany({

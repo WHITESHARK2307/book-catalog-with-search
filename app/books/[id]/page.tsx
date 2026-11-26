@@ -3,8 +3,29 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/auth';
 import BookDetailActions from '@/components/BookDetailActions';
+import Image from 'next/image';
+import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const book = await prisma.book.findUnique({ where: { id: Number(id) } });
+  if (!book) {
+    return {
+      title: 'Книга не найдена — Каталог книг Knigi',
+      description: 'Запрашиваемая книга отсутствует в каталоге сервиса Knigi.',
+    };
+  }
+  return {
+    title: `${book.title} — ${book.author} | Каталог Knigi`,
+    description: book.description.slice(0, 155),
+  };
+}
 
 export default async function BookDetailPage({
   params,
@@ -85,10 +106,12 @@ export default async function BookDetailPage({
           {/* Обложка */}
           <div>
             <div className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm">
-              <img
+              <Image
                 src={book.coverUrl}
                 alt={book.title}
-                className="aspect-[2/3] w-full object-cover"
+                width={400}
+                height={600}
+                className="aspect-2/3 w-full object-cover"
               />
             </div>
           </div>
@@ -122,7 +145,7 @@ export default async function BookDetailPage({
               </div>
 
               {/* Плашка перехода на Литрес */}
-              <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50 px-5 py-4">
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-orange-200 bg-linear-to-r from-orange-50 to-amber-50 px-5 py-4">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-wider text-orange-700">
                     Полная версия книги

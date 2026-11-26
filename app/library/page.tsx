@@ -6,6 +6,11 @@ import LibraryClient from '@/components/LibraryClient';
 
 export const dynamic = 'force-dynamic';
 
+export const metadata = {
+  title: 'Моя библиотека — Личная книжная полка | Knigi',
+  description: 'Управляйте списком книг на личной полке: отмечайте прочитанное, текущее чтение и планы.',
+};
+
 export default async function LibraryPage() {
   const currentUser = await getCurrentUser();
   if (!currentUser) {

@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export interface BookCardData {
   id: number;
@@ -190,11 +191,14 @@ export default function CatalogView({ books, currentUser }: CatalogViewProps) {
                 className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
               >
                 <div className="relative aspect-2/3 w-full overflow-hidden bg-slate-100">
-                  <img
+                  <Image
                     src={book.coverUrl}
                     alt={book.title}
-                    className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                    fill
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
+                    className="object-cover transition duration-300 group-hover:scale-105"
                   />
+
                   <span className="absolute bottom-2.5 left-2.5 rounded-lg bg-white/90 px-2 py-0.5 text-xs font-semibold text-slate-800 backdrop-blur">
                     {book.genre}
                   </span>

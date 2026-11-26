@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface LibraryEntry {
   id: number;
@@ -118,9 +119,11 @@ export default function LibraryClient({
               className="flex gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
             >
               <Link href={`/books/${book.id}`} className="shrink-0">
-                <img
+                <Image
                   src={book.coverUrl}
                   alt={book.title}
+                  width={88}
+                  height={128}
                   className="h-32 w-22 rounded-xl object-cover"
                 />
               </Link>

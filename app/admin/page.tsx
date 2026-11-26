@@ -6,6 +6,11 @@ import AdminDashboard from '@/components/AdminDashboard';
 
 export const dynamic = 'force-dynamic';
 
+export const metadata = {
+  title: 'Панель администратора и аналитика каталога | Knigi',
+  description: 'Статистика книг по жанрам, управление каталогом, добавление и удаление произведений.',
+};
+
 export default async function AdminPage() {
   const currentUser = await getCurrentUser();
   if (!currentUser) {
